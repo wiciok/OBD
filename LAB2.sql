@@ -95,3 +95,30 @@ BEGIN
   END LOOP;
    DBMS_OUTPUT.PUT_LINE('wynik: ' || RESULT_VAL);
 END;
+
+
+
+
+--ZESTAW2 ZAD7
+--??? dlaczego to nie dziala?
+DECLARE
+  srednia number(5,10); 
+  student2 STUDENT%ROWTYPE;
+BEGIN      
+   SELECT id_student, imie, nazwisko, nralbumu, round(avg(ocena),2) AS OCENA  
+   --INTO student2.id_student, student2.imie, student2.nazwisko, student2.nralbumu, srednia 
+   FROM student INNER JOIN OCENA USING(ID_STUDENT)
+   GROUP BY imie, nazwisko, nralbumu, id_student
+   ORDER BY OCENA DESC
+   FETCH FIRST ROW ONLY;
+   
+   --SYS.DBMS_OUTPUT.PUT_LINE(to_char(student2));
+END;
+
+--zad8a
+DECLARE
+  student STUDENT%ROWTYPE;
+BEGIN
+  
+END;
+
