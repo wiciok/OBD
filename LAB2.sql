@@ -70,55 +70,93 @@ BEGIN
   END IF;
 END;
 
-/**ZAD 5**/
-ACCEPT n prompt 'Podaj n';
+--ZAD5
+ACCEPT input_nn PROMPT 'Podaj liczbe wyrazow szeregu: ';
 DECLARE
-  N_VAL NUMBER(3):= &n;
-  RESULT_VAL NUMBER (12,4):=0;
-  SILNIA_VAL INT:=0;
+  nn NUMBER(2);
+  res NUMBER(10,8):=0;
+  factorial_res NUMBER(10,0):=1; 
 BEGIN
-  FOR iter IN 0.. N_VAL LOOP
-  
-        CASE
-          WHEN N_VAL<0 THEN
-            DBMS_OUTPUT.PUT_LINE('LICZBA UJEMNA');
-          WHEN N_VAL = 0 THEN
-            SILNIA_VAL := 1;
-          ELSE
-            SILNIA_VAL:=1;
-            FOR iter2 IN 1..iter LOOP
-              SILNIA_VAL := SILNIA_VAL * iter2;
-            END LOOP;
-          END CASE;
-          
-    RESULT_VAL:=RESULT_VAL + 1/SILNIA_VAL;
+  nn:=&input_nn;
+  FOR ii IN 0..NN LOOP
+    factorial_res:=1;
+    FOR jj IN 1..ii LOOP
+      factorial_res:=factorial_res*jj;
+    END LOOP;
+    res:=res+1/factorial_res;
   END LOOP;
-   DBMS_OUTPUT.PUT_LINE('wynik: ' || RESULT_VAL);
+  dbms_output.put_line('Liczba e wynosi: '||to_char(res));
 END;
 
+--zad6
 
-
-
---ZESTAW2 ZAD7
---??? dlaczego to nie dziala?
 DECLARE
-  srednia number(5,10); 
+  time1 timestamp;
+BEGIN
+  LOOP
+      SELECT CURRENT_TIMESTAMP
+      INTO time1
+      FROM dual;
+  EXIT WHEN REMAINDER(round(extract(second from time1)),15)=0;
+  END LOOP;
+  
+  DBMS_OUTPUT.PUT_LINE('jest godzina '|| to_char(time1, 'HH:MI:SS') ||' koncze dzialanie');
+END;
+--mod - wynik dzielenia modulo
+--remainder - reszta z dzielenia modulo
+
+--zad7
+DECLARE
+  srednia number(10,5); 
   student2 STUDENT%ROWTYPE;
 BEGIN      
-   SELECT id_student, imie, nazwisko, nralbumu, round(avg(ocena),2) AS OCENA  
-   --INTO student2.id_student, student2.imie, student2.nazwisko, student2.nralbumu, srednia 
+   SELECT imie, nazwisko, nralbumu, round(avg(ocena),2) AS OCENA  
+   INTO student2.imie, student2.nazwisko, student2.nralbumu, srednia 
    FROM student INNER JOIN OCENA USING(ID_STUDENT)
    GROUP BY imie, nazwisko, nralbumu, id_student
    ORDER BY OCENA DESC
    FETCH FIRST ROW ONLY;
    
-   --SYS.DBMS_OUTPUT.PUT_LINE(to_char(student2));
+   SYS.DBMS_OUTPUT.PUT_LINE(student2.imie ||' ' ||student2.nazwisko||' '||student2.nralbumu||''||srednia);
 END;
 
 --zad8a
 DECLARE
-  student STUDENT%ROWTYPE;
+  student2 STUDENT%ROWTYPE;
 BEGIN
-  
+  SELECT ID_STUDENT, imie, nazwisko, nralbumu 
+  INTO student2.id_student, student2.imie, student2.nazwisko, student2.nralbumu
+  FROM 
+  (
+     SELECT ID_STUDENT, imie, nazwisko, nralbumu, round(avg(ocena),2) AS OCENA  
+     FROM student INNER JOIN OCENA USING(ID_STUDENT)
+     GROUP BY imie, nazwisko, nralbumu, id_student
+     ORDER BY OCENA ASC
+     FETCH FIRST ROW ONLY
+  );
 END;
 
+--zad8b
+DECLARE
+  TYPE student_typ IS RECORD
+  (
+    ID_STUDENT NUMBER(4,0),
+    IMIE VARCHAR2(20),
+    NAZWISKO VARCHAR2(30),
+    ID_ADRES NUMBER(4,0),
+    NRALBUMU NUMBER (10,0),
+    ID_GRUPA NUMBER(4,0)
+  );
+  student2 student_typ;
+BEGIN
+  SELECT ID_STUDENT, imie, nazwisko, nralbumu 
+  INTO student2.id_student, student2.imie, student2.nazwisko, student2.nralbumu
+  FROM 
+  (
+     SELECT ID_STUDENT, imie, nazwisko, nralbumu, round(avg(ocena),2) AS OCENA  
+     FROM student INNER JOIN OCENA USING(ID_STUDENT)
+     GROUP BY imie, nazwisko, nralbumu, id_student
+     ORDER BY OCENA ASC
+     FETCH FIRST ROW ONLY
+  );
+END;
